@@ -1,0 +1,19 @@
+fastapi
+uvicorn[standard]
+
+# Database
+sqlalchemy
+
+# Authentication
+pyjwt[crypto]
+
+# Environment Variables
+python-dotenv
+
+# Password Hashing
+bcrypt
+passlib[bcrypt]
+
+# Other
+pydantic  # Data validation
+email-validator  # email validation in Pydantic models
