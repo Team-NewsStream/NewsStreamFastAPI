@@ -25,26 +25,26 @@ def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def create_jwt_token(data: dict, expires_delta: timedelta):
+def create_jwt_token(data: dict, expires_delta: timedelta, secret: str):
     """Generates a JWT token with a dynamic expiration time."""
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + expires_delta
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, JWT_ACCESS_SECRET, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(payload=to_encode, key=secret, algorithm=ALGORITHM)
     return encoded_jwt
 
 
 def create_refresh_token(data: dict, expires_delta: timedelta | None = None):
     """Wrapper to generate an refresh token."""
     if expires_delta:
-        return create_jwt_token(data, expires_delta)
+        return create_jwt_token(data, expires_delta, secret=JWT_REFRESH_SECRET)
     expires_delta = timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
-    return create_jwt_token(data=data, expires_delta=expires_delta)
+    return create_jwt_token(data=data, expires_delta=expires_delta, secret=JWT_REFRESH_SECRET)
 
 
 def create_access_token(data: dict, expires_delta: timedelta = None):
     """Wrapper to generate an access token."""
     if expires_delta:
-        return create_jwt_token(data, expires_delta)
+        return create_jwt_token(data, expires_delta, secret=JWT_ACCESS_SECRET)
     expires_delta = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    return create_jwt_token(data=data, expires_delta=expires_delta)
+    return create_jwt_token(data=data, expires_delta=expires_delta, secret=JWT_ACCESS_SECRET)
