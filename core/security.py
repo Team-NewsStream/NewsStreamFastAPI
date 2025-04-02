@@ -38,7 +38,7 @@ def create_refresh_token(data: dict, expires_delta: timedelta | None = None):
     """Wrapper to generate an refresh token."""
     if expires_delta:
         return create_jwt_token(data, expires_delta)
-    expires_delta = timedelta(minutes=REFRESH_TOKEN_EXPIRE_DAYS)
+    expires_delta = timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
     return create_jwt_token(data=data, expires_delta=expires_delta)
 
 
