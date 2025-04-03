@@ -1,7 +1,7 @@
 from fastapi import status, HTTPException
 from sqlalchemy.orm import Session
 
-from core.security import verify_password, create_access_token, create_refresh_token
+from core.security import verify_password, create_access_token, create_refresh_token, verify_refresh_token
 from repositories.user import get_user_by_email, create_user
 from schemas.user import LoginRequest, TokenResponse, UserCreate
 
@@ -36,5 +36,22 @@ def authenticate_user(db: Session, login_data: LoginRequest) -> TokenResponse:
 
     access_token = create_access_token({"sub": user.email})
     refresh_token = create_refresh_token({"sub": user.email})
+
+    return TokenResponse(access_token=access_token, refresh_token=refresh_token)
+
+
+def refresh_tokens(refresh_token: str) -> TokenResponse:
+    """Issue a new access token using a valid refresh token and rotate the refresh token."""
+    payload = verify_refresh_token(refresh_token)
+
+    if not payload:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
+
+    email = payload.get("sub")
+    if not email:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
+
+    access_token = create_access_token({"sub": email})
+    refresh_token = create_refresh_token({"sub": email})  # Rotating refresh token
 
     return TokenResponse(access_token=access_token, refresh_token=refresh_token)

@@ -3,6 +3,7 @@ uvicorn[standard]
 
 # Database
 sqlalchemy
+alembic
 
 # Authentication
 pyjwt[crypto]
