@@ -6,10 +6,12 @@ from dotenv import load_dotenv
 from fastapi import HTTPException, status
 from passlib.context import CryptContext
 
+from core.settings import settings
+
 load_dotenv()
 
-JWT_ACCESS_SECRET = os.getenv("JWT_ACCESS_SECRET")
-JWT_REFRESH_SECRET = os.getenv("JWT_REFRESH_SECRET")
+JWT_ACCESS_SECRET = settings.JWT_ACCESS_SECRET
+JWT_REFRESH_SECRET = settings.JWT_REFRESH_SECRET
 ALGORITHM = os.getenv("ALGORITHM")
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30

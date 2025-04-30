@@ -1,3 +1,5 @@
+import re
+
 from fastapi import status, HTTPException
 from sqlalchemy.orm import Session
 
@@ -7,12 +9,26 @@ from schemas.user import LoginRequest, TokenResponse, UserCreate
 
 
 def register_user(db: Session, user_credentials: UserCreate) -> TokenResponse:
+    if not user_credentials.name or not user_credentials.email or not user_credentials.password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Name, email and password are required to register a user"
+        )
+
     user = get_user_by_email(db, user_credentials.email)
     if user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered",
         )
+
+    email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+    if not re.match(email_regex, user_credentials.email):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid email format"
+        )
+
     if len(user_credentials.password) < 5:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -27,6 +43,12 @@ def register_user(db: Session, user_credentials: UserCreate) -> TokenResponse:
 
 
 def authenticate_user(db: Session, login_data: LoginRequest) -> TokenResponse:
+    if not login_data.email or not login_data.password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email and password are required to login"
+        )
+
     user = get_user_by_email(db, login_data.email)
     if user is None or not verify_password(login_data.password, user.hashed_password):
         raise HTTPException(

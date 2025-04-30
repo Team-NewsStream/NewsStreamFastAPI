@@ -7,7 +7,7 @@ from pydantic import BaseModel
 class SourceResponse(BaseModel):
     id: int
     name: str
-    url: str
+    logo_url: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -15,7 +15,7 @@ class SourceResponse(BaseModel):
 
 class SourceCreate(BaseModel):
     name: str
-    url: str
+    logo_url: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -37,6 +37,7 @@ class CategoryCreate(BaseModel):
 
 
 class ArticleResponse(BaseModel):
+    id: int
     title: str
     url: str
     description: Optional[str] = None
@@ -44,21 +45,23 @@ class ArticleResponse(BaseModel):
     published_at: datetime = None
     source: SourceResponse
     sentiment: str = None
-    category: Optional[str] = None
+    category: Optional[CategoryResponse] = None
 
     class Config:
         from_attributes = True
 
 
 class ArticleCreate(BaseModel):
+    uuid: str
     title: str
     url: str
     description: Optional[str] = None
     url_to_image: str
     published_at: datetime = None
-    source: SourceResponse
+    source: SourceCreate
     sentiment: str = None
-    category: Optional[str] = None
+    category: Optional[str] = None,
+    is_trending: bool = False
 
     class Config:
         from_attributes = True
