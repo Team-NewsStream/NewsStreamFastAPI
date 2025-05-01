@@ -1,11 +1,19 @@
 fastapi
 uvicorn[standard]
+httpx
 
 # Database
 sqlalchemy
+pymysql
+alembic
+
+# Google Cloud
+google-cloud-secret-manager
+protobuf
 
 # Authentication
 pyjwt[crypto]
+cryptography
 
 # Environment Variables
 python-dotenv
@@ -14,6 +22,11 @@ python-dotenv
 bcrypt
 passlib[bcrypt]
 
+# Background Tasks
+redis
+celery[redis]
+
 # Other
-pydantic  # Data validation
+pydantic
 email-validator  # email validation in Pydantic models
+starlette
