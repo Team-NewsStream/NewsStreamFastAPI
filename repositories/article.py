@@ -78,15 +78,26 @@ def get_category_articles(
     return articles if articles else []
 
 
-def get_trending_articles(db: Session, page: int = 1, page_size: int = 25) -> list[Article]:
+def get_trending_articles(
+        db: Session,
+        last_item_id: Optional[int] = None,
+        omit_negative_sentiment: bool = False,
+        page_size: int = 25
+) -> list[Article]:
     """Fetch trending articles, paginated."""
     query = (
         db.query(Article)
         .join(Trending, Article.uuid == Trending.article_uuid)
         .order_by(Article.id.desc())
     )
-    offset = (page - 1) * page_size
-    articles = query.offset(offset).limit(page_size).all()
+
+    if last_item_id is not None:
+        query = query.filter(Article.id < last_item_id)
+
+    if omit_negative_sentiment:
+        query = query.filter(Article.sentiment == "positive")
+
+    articles = query.limit(page_size).all()
     return articles if articles else []
 
 

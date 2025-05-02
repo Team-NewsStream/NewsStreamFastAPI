@@ -52,14 +52,20 @@ def fetch_category_articles(
     dependencies=[Depends(get_current_user)]
 )
 def fetch_trending_topics(
-        page: int = 1,
+        last_item_id: int = None,
         page_size: int = 25,
+        omit_negative_sentiment: bool = False,
         db: Session = Depends(get_db)
 ):
     """Protected route: Fetch trending news."""
     if page_size > 50:
         page_size = 50
-    articles = get_trending_articles(db=db, page=page, page_size=page_size)
+    articles = get_trending_articles(
+        db=db,
+        last_item_id=last_item_id,
+        omit_negative_sentiment=omit_negative_sentiment,
+        page_size=page_size
+    )
     return [ArticleResponse.model_validate(article) for article in articles] if articles else []
 
 
